@@ -1,7 +1,7 @@
 {
-  "name": "Chat_web",
+  "name": "Chat web",
   "version": "1.0.0",
-  "description": "Un chat virtual de aplicacion web",
+  "description": "",
   "main": "index.js",
   "dependencies": {
     "body-parser": "^1.19.0",
@@ -13,6 +13,6 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "Joaquin vezzoni",
+  "author": "",
   "license": "ISC"
 }
