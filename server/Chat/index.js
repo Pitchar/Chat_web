@@ -84,7 +84,7 @@ module.exports = Router;
         var $GuardaInfo = $('.guardaInfo')
         $GuardaInfo.on('click', function(){ // escuchamos el boton de guardar, cuando se activa capturamos el nombre y lo asignamos
           var nombre = $('.nombreUsuario').val()
-          var user = [{nombre: nombre, img: 'p2.png'}]
+          var user = [{nombre: nombre, img: 'p2.jpg'}]
         callback(user) // se ejecuta el callback y finaliza.
 
 
@@ -198,4 +198,4 @@ module.exports = Router;
     }
   })()
   Chat.Init()
-})(document, window, undefined, jQuery)
+})
