@@ -1,6 +1,6 @@
-var express = require('express');
-var Storage = require('../Storage');
-var Router = express.Router();
+const express = require('express');
+      Storage = require('../Storage');
+      Router = express.Router();
 
 Router.get('/users', function (req, res) {
     Storage.getData('users')
@@ -20,62 +20,70 @@ Router.get('/messages', function (req, res) {
         });
 });
 
-Router.post('/users', function (req, res) {
-    var user = req.body.users;
+Router.post('/users', (req, res) => {
+    let user = req.body.users;
 
     Storage.getData('users')
-        .then(function (users) {
-            return new Promise(function (resolve, reject) {
+        .then((users) => {
+            return new Promise((resolve, reject) {
                 Storage.saveData('users', user, users)
-                    .then(function (message) {
+                    .then((message) => {
                         resolve(message);
-                    }).catch(function (err) {
+                    }).catch((err) => {
                         reject(err);
                     })
             })
-        }).then(function (message) {
+        }).then((message) => {
             res.json(message);
-        }).catch(function (err) {
+        }).catch((err) => {
             res.sendStatus(500).json(err);
         })
 });
 
-Router.post('/messages', function (req, res) {
-    var message = req.body.message;
+Router.post('/messages',(req, res) => {
+    let message = req.body.message;
 
     Storage.getData('messages')
-        .then(function (messages) {
-            return new Promise(function (resolve, reject) {
+        .then((messages)=> {
+            return new Promise((resolve, reject)=> {
                 Storage.saveData('messages', message, messages)
-                    .then(function (message) {
+                    .then((message) => {
                         resolve(message);
-                    }).catch(function (err) {
+                    }).catch((err) => {
                         reject(err);
                     })
             })
-        }).then(function (message) {
+        }).then((message)=> {
             res.json(message);
-        }).catch(function (err) {
+        }).catch((err)=> {
             res.sendStatus(500).json(err);
         })
 });
 
 module.exports = Router;
 
-(function(document, window, undefined, $){
+(function(document, window, undefined, jQuery, io){
   (function (){
     return Chat = {
       //Todo el codigo
       apiUrl: '/chat',
-      $userDataModal: $('#modalCaptura'),
-      $btnMessage: $('#$btnMessage'),
-      $messageText: $('$messageText'),
+      $userDataModal: $ ('#modalCaptura'),
+      $btnMessage: $ ('#$btnMessage'),
+      $messageText: $ ('$messageText'),
       userName: '',
+      socket: io(),
 
       Init: function(){
         var self = this
         this.fetchUserInfo(function (user){ //fetchUserInfo: sera la enargada de mostrar el modal y pedirle al usuario que ingrese un nombre de usuario.
           self.renderUser(user)// una vez finalizada lo anterior renderUser se encarga de agregar el usuario que acaba de igresar al documento html.
+        })
+        this.watchMessages()
+        self.socket.on('userJoin', function(user){
+          self.renderUser(user)
+        })
+        self.socket.on('message', function(message){
+          self.renderUser(message)
         })
       },
       fetchUserInfo: function(callback){ // se ejecurata cuando termine todas las operaciones.
@@ -85,6 +93,7 @@ module.exports = Router;
         $GuardaInfo.on('click', function(){ // escuchamos el boton de guardar, cuando se activa capturamos el nombre y lo asignamos
           var nombre = $('.nombreUsuario').val()
           var user = [{nombre: nombre, img: 'p2.jpg'}]
+          self.socket.emit('userJoin', user[0])
         callback(user) // se ejecuta el callback y finaliza.
 
 
@@ -139,7 +148,7 @@ module.exports = Router;
                                       .replace(':nombre', user.nombre)
           })
         },
-        watcMessages: function(){
+        watchMessages: function(){
           var self = this
           self.$messageText.on('keypress', function(e){
             if(e.which == 13){
@@ -149,6 +158,7 @@ module.exports = Router;
                   text: $(this).val()
                 }
                 self.renderMessage(message)
+                self.socket.emit('message', message)
                 $(this).val('')
               }else{
                 e.preventDefault()
@@ -162,6 +172,7 @@ module.exports = Router;
                 text: $(this).val()
               }
               self.renderMessage(message)
+              self.socket.emit('message', message)
               self.$messageText.val('')
             }
           })
@@ -198,4 +209,4 @@ module.exports = Router;
     }
   })()
   Chat.Init()
-})
+})();
